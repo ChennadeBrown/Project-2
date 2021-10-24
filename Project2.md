@@ -120,7 +120,7 @@ ggplot(onlineNewsLifestyle, aes(n_tokens_title, shares)) +
   geom_point()
 ```
 
-![](Project2_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](Project2_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 # Scatterplot of Number of words in content vs. shares
@@ -128,7 +128,7 @@ ggplot(onlineNewsLifestyle, aes(n_tokens_content, shares)) +
   geom_point()
 ```
 
-![](Project2_files/figure-gfm/unnamed-chunk-24-2.png)<!-- -->
+![](Project2_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
 
 ``` r
 # Histogram of total shares. Median line drawn in
@@ -142,7 +142,7 @@ ggplot(onlineNewsLifestyle, aes(x=shares))+
 
     ## Warning: Removed 2 rows containing missing values (geom_bar).
 
-![](Project2_files/figure-gfm/unnamed-chunk-24-3.png)<!-- -->
+![](Project2_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
 
 ``` r
 # Summary statistics for the number of words in the content.
@@ -212,7 +212,7 @@ xpred <- onlineNewsLifestyle %>% select(n_tokens_content, n_tokens_title, num_ke
 GGally::ggpairs(xpred, title = "Correlogram with ggpairs")
 ```
 
-![](Project2_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+![](Project2_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 # The following scatterplot shows the trend of shares as a function of the number of links in the content.  An upward trend in the points indicates that articles with more links are shared more often.  A downward trend would indicate that articles with more links are shared less often.  If there is neither an upward or downward trend this indicates that the number of links in the article has no effect on whether the article will be shared.
@@ -221,7 +221,7 @@ g <- ggplot(onlineNewsLifestyle, aes(x = num_hrefs, y = shares)) + labs(y ="Numb
 g + geom_point(col = "red") + ggtitle("Number of Links vs. Shares") + geom_text(x = 125, y = 30000, size = 5, label = paste0("Correlation = ", round(correlation, 2)))
 ```
 
-![](Project2_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+![](Project2_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 # The following scatterplot shows the relationship between the rate of positive words in the articles and the number of shares.  If the plots are on an upward trajectory then articles with more positive words are shared the most.  If the plots are on a downward trend then the articles with the most positive words are shared the least.
@@ -230,7 +230,7 @@ g <- ggplot(onlineNewsLifestyle, aes(x = rate_positive_words, y = shares)) + lab
 g + geom_point(col = "red") + ggtitle("Rate of Positive Words vs. Shares") + geom_text(x = 0.75, y = 100000, size = 5, label = paste0("Correlation = ", round(correlationTwo, 2)))
 ```
 
-![](Project2_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+![](Project2_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ## Modeling
 
