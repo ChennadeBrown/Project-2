@@ -10,8 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-
-```{r, echo = TRUE}
+```{r, echo = TRUE, message = FALSE}
 library(tidyverse)
 library(dplyr)
 library(knitr)
