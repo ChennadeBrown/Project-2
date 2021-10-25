@@ -7,17 +7,73 @@ Alex Prevatte & Chennade Brown
 -   [Data](#data)
 -   [Summarizations](#summarizations)
 -   [Modeling](#modeling)
+-   [Comparison](#comparison)
 -   [Automation](#automation)
 
 ## Introduction
 
 ``` r
 library(tidyverse)
+```
+
+    ## -- Attaching packages ---------------------------------------- tidyverse 1.3.1 --
+
+    ## v ggplot2 3.3.5     v purrr   0.3.4
+    ## v tibble  3.1.4     v dplyr   1.0.7
+    ## v tidyr   1.1.4     v stringr 1.4.0
+    ## v readr   2.0.2     v forcats 0.5.1
+
+    ## -- Conflicts ------------------------------------------- tidyverse_conflicts() --
+    ## x dplyr::filter() masks stats::filter()
+    ## x dplyr::lag()    masks stats::lag()
+
+``` r
 library(dplyr)
 library(knitr)
 library(GGally)
+```
+
+    ## Registered S3 method overwritten by 'GGally':
+    ##   method from   
+    ##   +.gg   ggplot2
+
+``` r
 library(corrplot)
 ```
+
+    ## corrplot 0.90 loaded
+
+``` r
+library(caret)
+```
+
+    ## Loading required package: lattice
+
+    ## 
+    ## Attaching package: 'caret'
+
+    ## The following object is masked from 'package:purrr':
+    ## 
+    ##     lift
+
+``` r
+library(randomForest)
+```
+
+    ## randomForest 4.6-14
+
+    ## Type rfNews() to see new features/changes/bug fixes.
+
+    ## 
+    ## Attaching package: 'randomForest'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     combine
+
+    ## The following object is masked from 'package:ggplot2':
+    ## 
+    ##     margin
 
 ## Data
 
@@ -173,20 +229,24 @@ sumImages
 
 ``` r
 # Add Word variable for words to include low, average, and high word count and combine with dayshares dataframe for contingency table.
-onlineNewsLifestyle <- dayShares %>% mutate(Words = if_else(n_tokens_content <= 500, "Low", if_else(n_tokens_content <= 625, "Average", "High")))
-
-# Remove extra column WordCount.
-onlineNewsLifestyle$WordCount <- NULL
+wordLinkShares <- dayShares %>% mutate(Words = if_else(n_tokens_content <= 500, "Low", if_else(n_tokens_content <= 625, "Average", "High")))
 ```
 
 ``` r
 # Add Link variable for the number of links in the content to include low, average, and high count.
-onlineNewsLifestyle <- onlineNewsLifestyle %>% mutate(Links = if_else(num_hrefs <= 9, "Low", if_else(num_hrefs <= 14, "Average","High")))
+wordLinkShares <- wordLinkShares %>% mutate(Links = if_else(num_hrefs <= 9, "Low", if_else(num_hrefs <= 14, "Average","High")))
+
+# Remove extra columns added to onLineNewsLifestyle.
+onlineNewsLifestyle$WordCount <- NULL
+onlineNewsLifestyle$Popular <- NULL
+onlineNewsLifestyle$Words <- NULL
+onlineNewsLifestyle$Links <- NULL
+onlineNewsLifestyle$Day <- NULL
 ```
 
 ``` r
-# Contingency table for the number of words in the content based on grouping the word count into categories of low, average, and high word count and grouping the shares based on popularity.
-table(onlineNewsLifestyle$Popular, onlineNewsLifestyle$Words)
+# Contingency table for the number of words in the content based on grouping the word count into categories of low, average, and high word count and grouping the shares based on popularity (shares greater than the median).
+table(wordLinkShares$Popular, wordLinkShares$Words)
 ```
 
     ##      
@@ -195,8 +255,8 @@ table(onlineNewsLifestyle$Popular, onlineNewsLifestyle$Words)
     ##   Yes     136  390 468
 
 ``` r
-# Contingency table for the number of links in the content based on grouping the link count into categories of low, average,and high and shares based on popularity.
-table(onlineNewsLifestyle$Popular, onlineNewsLifestyle$Links)
+# Contingency table for the number of links in the content based on grouping the link count into categories of low, average,and high and shares based on popularity (shares greater than the median)
+table(wordLinkShares$Popular, wordLinkShares$Links)
 ```
 
     ##      
@@ -208,11 +268,19 @@ table(onlineNewsLifestyle$Popular, onlineNewsLifestyle$Links)
 # Select predictors to view in GGPairs plot.
 xpred <- onlineNewsLifestyle %>% select(n_tokens_content, n_tokens_title, num_keywords, rate_positive_words, rate_negative_words, shares)
 
+xpred2 <- onlineNewsLifestyle %>% select(num_hrefs, global_subjectivity, num_imgs, title_subjectivity, max_positive_polarity, shares)
+
 # GGPairs plot to view correlation among the predictors.  Correlation greater than 75% indicates the predictors are highly correlated.
-GGally::ggpairs(xpred, title = "Correlogram with ggpairs")
+ggpairs(xpred, title = "Correlogram with ggpairs")
 ```
 
 ![](Project2_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+``` r
+ggpairs(xpred2, title = "Correlogram with ggpairs")
+```
+
+![](Project2_files/figure-gfm/unnamed-chunk-14-2.png)<!-- -->
 
 ``` r
 # The following scatterplot shows the trend of shares as a function of the number of links in the content.  An upward trend in the points indicates that articles with more links are shared more often.  A downward trend would indicate that articles with more links are shared less often.  If there is neither an upward or downward trend this indicates that the number of links in the article has no effect on whether the article will be shared.
@@ -233,5 +301,120 @@ g + geom_point(col = "red") + ggtitle("Rate of Positive Words vs. Shares") + geo
 ![](Project2_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ## Modeling
+
+``` r
+# Split the data into a training (70% of the data) and test set (30% of the data).
+set.seed(90)
+trainIndex <- createDataPartition(onlineNewsLifestyle$shares, p = 0.7, list = FALSE)
+onlineNewsTrain <- onlineNewsLifestyle[trainIndex, ]
+onlineNewsTest <- onlineNewsLifestyle[-trainIndex, ]
+dim(onlineNewsTrain)
+```
+
+    ## [1] 1472   54
+
+``` r
+dim(onlineNewsTest)
+```
+
+    ## [1] 627  54
+
+### Linear Regression Models
+
+A linear regression model is a model used to determine the relationship
+between two or more variables by fitting a linear equation to the data.
+The linear equation is in the form of: Y = Bo + B1X + E where Y is the
+response variable, X is the explanatory variable, Bo is the y intercept,
+and B1 is the slope. The model can be used to predict the value of the
+response variable based on the values of the explanatory variables. For
+example a linear regression model can be used to model the relationship
+between years of experience and salary.
+
+``` r
+# Store model one in a formula.
+modelOne <- as.formula("shares ~ n_tokens_content + n_tokens_title + rate_positive_words + num_keywords + global_subjectivity + max_positive_polarity + num_imgs")
+
+# Fit the linear regression models.
+fit1 <- train(modelOne, data = onlineNewsTrain,
+              method = "lm",
+              preProcess = c("center", "scale"),
+              trControl = trainControl(method = "cv", number = 10))
+fit1
+```
+
+    ## Linear Regression 
+    ## 
+    ## 1472 samples
+    ##    7 predictor
+    ## 
+    ## Pre-processing: centered (7), scaled (7) 
+    ## Resampling: Cross-Validated (10 fold) 
+    ## Summary of sample sizes: 1324, 1325, 1324, 1325, 1324, 1325, ... 
+    ## Resampling results:
+    ## 
+    ##   RMSE      Rsquared    MAE     
+    ##   8388.512  0.01659042  3365.702
+    ## 
+    ## Tuning parameter 'intercept' was held constant at a value of TRUE
+
+### Random Forest Model
+
+Random Forest models are an extension of the tree based method bagging.
+The random forest algorithm creates multiple trees from bootstrapped
+samples, averages those results, and uses a random subset of predictors
+for each bootstrap sample/tree fit. Random forests can be used for
+classification and regression problems.
+
+``` r
+rfFit <- train(shares ~., data = onlineNewsTrain, 
+               method = "rf", 
+               trainControl = trainControl(method = "cv",
+                                           number = 5),
+               tuneGrid = data.frame(mtry = 1:8))
+rfFit
+```
+
+    ## Random Forest 
+    ## 
+    ## 1472 samples
+    ##   53 predictor
+    ## 
+    ## No pre-processing
+    ## Resampling: Bootstrapped (25 reps) 
+    ## Summary of sample sizes: 1472, 1472, 1472, 1472, 1472, 1472, ... 
+    ## Resampling results across tuning parameters:
+    ## 
+    ##   mtry  RMSE       Rsquared     MAE     
+    ##   1      9652.179  0.007640930  3478.284
+    ##   2      9710.610  0.006792975  3587.933
+    ##   3      9764.663  0.006386262  3628.687
+    ##   4      9816.612  0.006124689  3666.316
+    ##   5      9880.838  0.005556097  3692.846
+    ##   6      9948.200  0.005178120  3723.199
+    ##   7      9988.540  0.005312533  3730.708
+    ##   8     10060.587  0.004808194  3764.121
+    ## 
+    ## RMSE was used to select the optimal model using the smallest value.
+    ## The final value used for the model was mtry = 1.
+
+## Comparison
+
+``` r
+# Compare linear regression model fit1 on the test set.
+pred <- predict(fit1, newdata = onlineNewsTest)
+postResample(pred, obs = onlineNewsTest$shares)
+```
+
+    ##         RMSE     Rsquared          MAE 
+    ## 5.942093e+03 7.507867e-04 3.306149e+03
+
+``` r
+# Compare random forest model rfFit on the test set.
+predForest <- predict(rfFit, newdata = onlineNewsTest)
+postResample(predForest, onlineNewsTest$shares)
+```
+
+    ##         RMSE     Rsquared          MAE 
+    ## 5.710658e+03 1.771297e-02 3.214227e+03
 
 ## Automation

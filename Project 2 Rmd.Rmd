@@ -17,6 +17,8 @@ library(dplyr)
 library(knitr)
 library(GGally)
 library(corrplot)
+library(caret)
+library(randomForest)
 ```
 
 ## Data
@@ -109,33 +111,41 @@ sumImages
 
 ```{r, echo = TRUE}
 # Add Word variable for words to include low, average, and high word count and combine with dayshares dataframe for contingency table.
-onlineNewsLifestyle <- dayShares %>% mutate(Words = if_else(n_tokens_content <= 500, "Low", if_else(n_tokens_content <= 625, "Average", "High")))
+wordLinkShares <- dayShares %>% mutate(Words = if_else(n_tokens_content <= 500, "Low", if_else(n_tokens_content <= 625, "Average", "High")))
 
-# Remove extra column WordCount.
-onlineNewsLifestyle$WordCount <- NULL
 ```
 
 ```{r, echo = TRUE}
 # Add Link variable for the number of links in the content to include low, average, and high count.
-onlineNewsLifestyle <- onlineNewsLifestyle %>% mutate(Links = if_else(num_hrefs <= 9, "Low", if_else(num_hrefs <= 14, "Average","High")))
+wordLinkShares <- wordLinkShares %>% mutate(Links = if_else(num_hrefs <= 9, "Low", if_else(num_hrefs <= 14, "Average","High")))
+
+# Remove extra columns added to onLineNewsLifestyle.
+onlineNewsLifestyle$WordCount <- NULL
+onlineNewsLifestyle$Popular <- NULL
+onlineNewsLifestyle$Words <- NULL
+onlineNewsLifestyle$Links <- NULL
+onlineNewsLifestyle$Day <- NULL
 ```
 
 ```{r, echo = TRUE}
-# Contingency table for the number of words in the content based on grouping the word count into categories of low, average, and high word count and grouping the shares based on popularity.
-table(onlineNewsLifestyle$Popular, onlineNewsLifestyle$Words)
+# Contingency table for the number of words in the content based on grouping the word count into categories of low, average, and high word count and grouping the shares based on popularity (shares greater than the median).
+table(wordLinkShares$Popular, wordLinkShares$Words)
 ```
 
 ```{r, echo = TRUE}
-# Contingency table for the number of links in the content based on grouping the link count into categories of low, average,and high and shares based on popularity.
-table(onlineNewsLifestyle$Popular, onlineNewsLifestyle$Links)
+# Contingency table for the number of links in the content based on grouping the link count into categories of low, average,and high and shares based on popularity (shares greater than the median)
+table(wordLinkShares$Popular, wordLinkShares$Links)
 ```
 
 ```{r, echo = TRUE, message = FALSE}
 # Select predictors to view in GGPairs plot.
 xpred <- onlineNewsLifestyle %>% select(n_tokens_content, n_tokens_title, num_keywords, rate_positive_words, rate_negative_words, shares)
 
+xpred2 <- onlineNewsLifestyle %>% select(num_hrefs, global_subjectivity, num_imgs, title_subjectivity, max_positive_polarity, shares)
+
 # GGPairs plot to view correlation among the predictors.  Correlation greater than 75% indicates the predictors are highly correlated.
-GGally::ggpairs(xpred, title = "Correlogram with ggpairs")
+ggpairs(xpred, title = "Correlogram with ggpairs")
+ggpairs(xpred2, title = "Correlogram with ggpairs")
 ```
 
 ```{r, echo = TRUE}
@@ -155,6 +165,54 @@ g + geom_point(col = "red") + ggtitle("Rate of Positive Words vs. Shares") + geo
 ```
 
 ## Modeling
+```{r, echo = TRUE}
+# Split the data into a training (70% of the data) and test set (30% of the data).
+set.seed(90)
+trainIndex <- createDataPartition(onlineNewsLifestyle$shares, p = 0.7, list = FALSE)
+onlineNewsTrain <- onlineNewsLifestyle[trainIndex, ]
+onlineNewsTest <- onlineNewsLifestyle[-trainIndex, ]
+dim(onlineNewsTrain)
+dim(onlineNewsTest)
+```
+
+### Linear Regression Models
+A linear regression model is a model used to determine the relationship between two or more variables by fitting a linear equation to the data.  The linear equation is in the form of: Y = Bo + B1X + E where Y is the response variable, X is the explanatory variable, Bo is the y intercept, and B1 is the slope.  The model can be used to predict the value of the response variable based on the values of the explanatory variables.  For example a linear regression model can be used to model the relationship between years of experience and salary.
+
+```{r, echo = TRUE}
+# Store model one in a formula.
+modelOne <- as.formula("shares ~ n_tokens_content + n_tokens_title + rate_positive_words + num_keywords + global_subjectivity + max_positive_polarity + num_imgs")
+
+# Fit the linear regression models.
+fit1 <- train(modelOne, data = onlineNewsTrain,
+              method = "lm",
+              preProcess = c("center", "scale"),
+              trControl = trainControl(method = "cv", number = 10))
+fit1
+```
+
+### Random Forest Model
+Random Forest models are an extension of the tree based method bagging.  The random forest algorithm creates multiple trees from bootstrapped samples, averages those results, and uses a random subset of predictors for each bootstrap sample/tree fit.  Random forests can be used for classification and regression problems.
+
+```{r, echo = TRUE}
+rfFit <- train(shares ~., data = onlineNewsTrain, 
+               method = "rf", 
+               trainControl = trainControl(method = "cv",
+                                           number = 5),
+               tuneGrid = data.frame(mtry = 1:8))
+rfFit
+```
+
+## Comparison
+
+```{r, echo = TRUE}
+# Compare linear regression model fit1 on the test set.
+pred <- predict(fit1, newdata = onlineNewsTest)
+postResample(pred, obs = onlineNewsTest$shares)
+
+# Compare random forest model rfFit on the test set.
+predForest <- predict(rfFit, newdata = onlineNewsTest)
+postResample(predForest, onlineNewsTest$shares)
+```
 
 ## Automation
 
