@@ -14,66 +14,13 @@ Alex Prevatte & Chennade Brown
 
 ``` r
 library(tidyverse)
-```
-
-    ## -- Attaching packages ---------------------------------------- tidyverse 1.3.1 --
-
-    ## v ggplot2 3.3.5     v purrr   0.3.4
-    ## v tibble  3.1.4     v dplyr   1.0.7
-    ## v tidyr   1.1.4     v stringr 1.4.0
-    ## v readr   2.0.2     v forcats 0.5.1
-
-    ## -- Conflicts ------------------------------------------- tidyverse_conflicts() --
-    ## x dplyr::filter() masks stats::filter()
-    ## x dplyr::lag()    masks stats::lag()
-
-``` r
 library(dplyr)
 library(knitr)
 library(GGally)
-```
-
-    ## Registered S3 method overwritten by 'GGally':
-    ##   method from   
-    ##   +.gg   ggplot2
-
-``` r
 library(corrplot)
-```
-
-    ## corrplot 0.90 loaded
-
-``` r
 library(caret)
-```
-
-    ## Loading required package: lattice
-
-    ## 
-    ## Attaching package: 'caret'
-
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     lift
-
-``` r
 library(randomForest)
 ```
-
-    ## randomForest 4.6-14
-
-    ## Type rfNews() to see new features/changes/bug fixes.
-
-    ## 
-    ## Attaching package: 'randomForest'
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     combine
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     margin
 
 ## Data
 
