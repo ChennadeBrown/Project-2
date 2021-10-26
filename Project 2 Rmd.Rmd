@@ -10,19 +10,20 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-Our project involves creating predictive models and automating Markdown reports for each article topic (Lifestyle, Social Media, Business, World, Entertainment, and Technology) using the [Online News Popularity Data Set](https://archive.ics.uci.edu/ml/datasets/Online+News+Popularity). This dataset contains quantitative information for each article including the number of words, images, and links as well as qualitative information such as article topic and day published. The goal of this report is to predict article popularity by the number of shares for each topic using linear regression, random forest, and boosted tree models. Our team used the following attributes to predict article shares within each article topic:
+Our project involves creating predictive models and automating Markdown reports for each article topic (Lifestyle, Social Media, Business, World, Entertainment, and Technology) using the [Online News Popularity Data Set](https://archive.ics.uci.edu/ml/datasets/Online+News+Popularity). This dataset contains quantitative information including the number of words, images, and links, as well as qualitative information such as article topic and day published. The goal of this report is to predict the number of shares for each article topic using linear regression, random forest, and boosted tree models. Our team used 55 prediction attributes for ensemble methods and a combination of the following attributes for linear regression to predict article shares:
 
-* Note: Will update this based on models we decide to use
-
-n_tokens_title
-n_tokens_content
-weekday_is_*
-num_hrefs
-num_imgs
-.
-.
-.
-
+`n_tokens_title` : Number of words in the title
+`n_tokens_content` : Number of words in the content
+`rate_positive_words` : Rate of positive words among non-neutral tokens
+`num_hrefs` : Number of links
+`num_imgs` : Number of images
+`num_keywords` : Number of keywords in the metadata
+`global_subjectivity` : Text subjectivity
+`max_positive_polarity` : Max. polarity of positive words
+`num_imgs` : Number of images
+`kw_avg_avg` : Avg. keyword (avg. shares)
+`kw_min_avg` : Avg. keyword (min. shares)
+`kw_max_avg` : Avg. keyword (max. shares)
 
 ```{r, echo = TRUE, message = FALSE}
 library(tidyverse)
@@ -276,7 +277,8 @@ fit <- train(model, data = train,
               trControl = trainControl(method = "cv", number = 10))
 ```
 
-### Boosted Tree Model 
+### Boosted Tree Model
+Boosting is an ensemble tree-based method that seeks to improve prediction by training on decision trees which are grown sequentially. Each subsequent tree is grown on a modified version of the original data. The predictions are then updated as new trees are grown, minimizing the error of the previous tree. 
 
 ```{r}
 # Boosted tree. After examining ranges of values for number of trees and interaction depth, 25 trees with an interaction depth of 1 had the lowest test RMSE.
