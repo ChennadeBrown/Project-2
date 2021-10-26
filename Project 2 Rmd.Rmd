@@ -10,6 +10,20 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
+Our project involves creating predictive models and automating Markdown reports for each article topic (Lifestyle, Social Media, Business, World, Entertainment, and Technology) using the [Online News Popularity Data Set](https://archive.ics.uci.edu/ml/datasets/Online+News+Popularity). This dataset contains quantitative information for each article including the number of words, images, and links as well as qualitative information such as article topic and day published. The goal of this report is to predict article popularity by the number of shares for each topic using linear regression, random forest, and boosted tree models. Our team used the following attributes to predict article shares within each article topic:
+
+* Note: Will update this based on models we decide to use
+
+n_tokens_title
+n_tokens_content
+weekday_is_*
+num_hrefs
+num_imgs
+.
+.
+.
+
+
 ```{r, echo = TRUE, message = FALSE}
 library(tidyverse)
 library(dplyr)
@@ -27,12 +41,11 @@ library(randomForest)
 ```
 
 ```{r, echo = TRUE}
-
 # Start with using data from a single data_channel_is_* source
-variable.names(onlineNews)
 
-# filtered rows for data_channel_is_lifestyle and removed other 5 categories
-# removed non-predictive variables
+# Filtered rows for data_channel_is_lifestyle and removed other 5 categories. 
+# Removed non-predictive variables (URL, Timedelta).
+
 onlineNewsLifestyle <- onlineNews %>% filter(`data_channel_is_lifestyle` ==  1) %>% 
   select(- c(`data_channel_is_bus`, `data_channel_is_entertainment`,
              `data_channel_is_socmed`, `data_channel_is_tech`,
@@ -43,16 +56,28 @@ names(onlineNewsLifestyle) <- sub(" ", "", names(onlineNewsLifestyle))
 
 # Convert to dataframe for plotting
 onlineNewsLifestyle <- data.frame(onlineNewsLifestyle)
-
 ```
 
 ## Summarizations
+
 ```{r, echo = TRUE}
 # Summary statistics for shares
 sum <- summary(onlineNewsLifestyle$shares)
 std <- sd(onlineNewsLifestyle$shares)
+# Median and mean to be used for histogram plot
 median <- sum[3]
-median
+mean <- sum[4]
+print(sum)
+
+# Summary statistics for Number of Words in Title
+sum <- summary(onlineNewsLifestyle$n_tokens_title)
+std <- sd(onlineNewsLifestyle$n_tokens_title)
+print(sum)
+
+# Summary statistics for Number of Words in Content
+sum <- summary(onlineNewsLifestyle$n_tokens_content)
+std <- sd(onlineNewsLifestyle$n_tokens_content)
+print(sum)
 ```
 
 ```{r}
@@ -62,32 +87,52 @@ dayShares <- onlineNewsLifestyle %>%
                           if_else(weekday_is_tuesday == 1, "T",
                                   if_else(weekday_is_wednesday == 1, "W", 
                                           if_else(weekday_is_thursday == 1, "R",
-                                                  if_else(weekday_is_friday == 1, "F",
-                                          "Weekend"))))))
+                                                  if_else(weekday_is_friday == 1,"F",
+                                                          if_else(weekday_is_saturday == 1,"Sat",
+                                                                  if_else(weekday_is_sunday == 1,"Sun", "NULL"))))))))
 
 # Add Popular variable for rows where shares is greater than the median
-dayShares <- dayShares %>% mutate(Popular = ifelse(shares > median, "Yes", "No")) %>% select(Popular, everything())
+dayShares <- dayShares %>% mutate(Popular = 
+                                    ifelse(shares > median, "Yes", "No")) %>% select(Popular, everything())
 
 # Contingency table for day of the week and shares greater than the median
 table(dayShares$Popular, factor(dayShares$Day, levels = c("M", "T", "W", 
-                                                          "R", "F", "Weekend")))
+                                                          "R", "F", "Sat", "Sun")))
 
+# Table of shares for each day
+tableTotal <- aggregate(dayShares$shares, by=list(Day=dayShares$Day), FUN=sum)
+colnames(tableTotal) <- c("Day", "Total_Shares")
+tableTotal$Day <- factor(tableTotal$Day, levels = c("M", "T", "W", 
+                                                          "R", "F", "Sat", "Sun"))
+tableTotal
+      
 ```
 
 ```{r, echo = TRUE}
-# Scatterplot of Number of words in title vs. shares
-ggplot(onlineNewsLifestyle, aes(n_tokens_title, shares)) +
-  geom_point()
+# Scatterplot of Number of Words in Title vs. Number of Shares
+titleCorrelation <- cor(onlineNewsLifestyle$shares, onlineNewsLifestyle$n_tokens_title)
 
-# Scatterplot of Number of words in content vs. shares
-ggplot(onlineNewsLifestyle, aes(n_tokens_content, shares)) +
-  geom_point()
+ggplot(onlineNewsLifestyle, aes(n_tokens_title, shares)) + 
+  labs(y = "Number of Shares", x = "Number of Words in Title") +
+  ggtitle("Number of Words in Title vs. Number of Shares") +
+  geom_point() + 
+  geom_text(x = 15, y = 200000, size = 5, 
+            label = paste0("Correlation =", round(titleCorrelation, 3)))
 
-# Histogram of total shares. Median line drawn in
-ggplot(onlineNewsLifestyle, aes(x=shares))+
+# Histogram of Total Shares. Mean and Median vertical lines have been included.
+ggplot(onlineNewsLifestyle, aes(x=shares)) +
+  labs(y = "Frequency", x = "Number of Shares") +
+  ggtitle("Frequency of Total Shares") +
   geom_histogram(binwidth = 500, color="darkblue", fill="lightblue") +
   xlim(0,30000) +
-  geom_vline(aes(xintercept = median), colour="black")
+  geom_vline(aes(xintercept = median), colour="black") + 
+  geom_vline(aes(xintercept = mean), colour="red")
+
+# Barplot of Total Shares vs. Day of the Week 
+ggplot(tableTotal, aes(x=Day, y = Total_Shares)) +
+  geom_bar(stat="identity", fill = "steelblue") +
+  labs(y = "Number of Shares", x = "Day of the Week") +
+  ggtitle("Total Shares by Day of the Week") 
 ```
 
 ```{r, echo = TRUE}
@@ -212,6 +257,54 @@ postResample(pred, obs = onlineNewsTest$shares)
 predForest <- predict(rfFit, newdata = onlineNewsTest)
 postResample(predForest, onlineNewsTest$shares)
 ```
+### Linear Regression Model
+
+```{r}
+# Set seed and split the data into 70% training and 30% test
+set.seed(100)
+index <- createDataPartition(onlineNewsLifestyle$shares, p = 0.7, list = FALSE)
+train <- onlineNewsLifestyle[index,]
+test <- onlineNewsLifestyle[-index,]
+
+# Backward selection better than best subset for this dataset. 5 variables were chosen
+model <- as.formula("shares ~ kw_avg_avg + kw_min_avg + kw_max_avg + num_hrefs + n_tokens_content")
+
+# Model fit on training data
+fit <- train(model, data = train,
+              method = "lm",
+              preProcess = c("center", "scale"),
+              trControl = trainControl(method = "cv", number = 10))
+```
+
+### Boosted Tree Model 
+
+```{r}
+# Boosted tree. After examining ranges of values for number of trees and interaction depth, 25 trees with an interaction depth of 1 had the lowest test RMSE.
+boostedTree <- train(shares ~. -data_channel_is_lifestyle, data = train,
+             method = "gbm",
+             preProcess = c("center", "scale"),
+             trControl = trainControl(method = "repeatedcv", number = 5,
+                                      repeats = 3),
+             tuneGrid = expand.grid(n.trees = 25, interaction.depth = 1, shrinkage = 0.1, n.minobsinnode = 10))
+```
+
+## Comparisons
+
+```{r}
+# Test error computed for backwards selection linear model
+pred <- predict(fit, newdata = test)
+p <- postResample(pred, obs = test$shares)
+
+# Test error computed for boosted tree model
+pred <- predict(boostedTree, newdata = test)
+p2 <- postResample(pred, obs = test$shares)
+
+# Produce a table for all comparisons
+comparisons <- t(rbind(p[1],p2[1]))
+colnames(comparisons) <- c("Linear Model Backwards Selection", "Boosted Tree")
+comparisons
+```
+
 
 ## Automation
 
