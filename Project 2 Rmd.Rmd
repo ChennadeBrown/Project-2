@@ -261,45 +261,47 @@ postResample(predForest, onlineNewsTest$shares)
 ### Linear Regression Model
 
 ```{r}
-# Set seed and split the data into 70% training and 30% test
-set.seed(100)
-index <- createDataPartition(onlineNewsLifestyle$shares, p = 0.7, list = FALSE)
-train <- onlineNewsLifestyle[index,]
-test <- onlineNewsLifestyle[-index,]
-
-# Backward selection better than best subset for this dataset. 5 variables were chosen
+# Backward selection chosen for additional linear model
 model <- as.formula("shares ~ kw_avg_avg + kw_min_avg + kw_max_avg + num_hrefs + n_tokens_content")
 
 # Model fit on training data
-fit <- train(model, data = train,
+fit <- train(model, data = onlineNewsTrain,
               method = "lm",
               preProcess = c("center", "scale"),
               trControl = trainControl(method = "cv", number = 10))
 ```
 
 ### Boosted Tree Model
-Boosting is an ensemble tree-based method that seeks to improve prediction by training on decision trees which are grown sequentially. Each subsequent tree is grown on a modified version of the original data. The predictions are then updated as new trees are grown, minimizing the error of the previous tree. 
+Boosting is an ensemble tree-based method used for regression and classification. Boosting seeks to improve prediction by training on decision trees which are grown sequentially. Each subsequent tree is grown on a modified version of the original data. The predictions are then updated as new trees are grown, minimizing the error of the previous tree. The parameters used in boosting are the number of trees, interaction depth (number of splits on a tree), shrinkage, and minimum number of observations in trees' terminal nodes.  
 
 ```{r}
 # Boosted tree. After examining ranges of values for number of trees and interaction depth, 25 trees with an interaction depth of 1 had the lowest test RMSE.
-boostedTree <- train(shares ~. -data_channel_is_lifestyle, data = train,
+boostedGrid <- expand.grid(
+  interaction.depth=c(1:4), 
+  n.trees=c(25,50,100,150,200),
+  shrinkage=0.1,
+  n.minobsinnode=10
+)
+
+boostedTree <- train(shares ~. -data_channel_is_lifestyle, 
+                     data = onlineNewsTrain,
              method = "gbm",
              preProcess = c("center", "scale"),
              trControl = trainControl(method = "repeatedcv", number = 5,
                                       repeats = 3),
-             tuneGrid = expand.grid(n.trees = 25, interaction.depth = 1, shrinkage = 0.1, n.minobsinnode = 10))
+             tuneGrid = boostedGrid)
 ```
 
 ## Comparisons
 
 ```{r}
 # Test error computed for backwards selection linear model
-pred <- predict(fit, newdata = test)
-p <- postResample(pred, obs = test$shares)
+pred <- predict(fit, newdata = onlineNewsTest)
+p <- postResample(pred, obs = onlineNewsTest$shares)
 
 # Test error computed for boosted tree model
-pred <- predict(boostedTree, newdata = test)
-p2 <- postResample(pred, obs = test$shares)
+pred <- predict(boostedTree, newdata = onlineNewsTest)
+p2 <- postResample(pred, obs = onlineNewsTest$shares)
 
 # Produce a table for all comparisons
 comparisons <- t(rbind(p[1],p2[1]))
