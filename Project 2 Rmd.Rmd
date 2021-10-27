@@ -2,6 +2,9 @@
 title: "Project 2 - Predictive Models"
 author: "Alex Prevatte & Chennade Brown"  
 date: "10/31/2021"
+output: github_document
+params:
+  topic: topic
 ---
 
 ```{r setup, include=FALSE}
@@ -33,6 +36,7 @@ library(GGally)
 library(corrplot)
 library(caret)
 library(randomForest)
+library(doParallel)
 ```
 
 ## Data
@@ -42,15 +46,23 @@ library(randomForest)
 ```
 
 ```{r, echo = TRUE}
-# Start with using data from a single data_channel_is_* source
+# Create articleTopic variable from data_channel_is_* variables
 
-# Filtered rows for data_channel_is_lifestyle and removed other 5 categories. 
-# Removed non-predictive variables (URL, Timedelta).
+onlineNewsLifestyle <- onlineNews %>% 
+  mutate(articleTopic = if_else(`data_channel_is_lifestyle` == 1, "Lifestyle",
+                          if_else(`data_channel_is_bus` == 1, "Business",
+                                  if_else(`data_channel_is_entertainment` == 1, "Entertainment", 
+                                          if_else(`data_channel_is_socmed` == 1, "Social Media",
+                                                  if_else(`data_channel_is_tech` == 1,"Tech",
+                                                          if_else(`data_channel_is_world` == 1, "World", "NULL")))))))
 
-onlineNewsLifestyle <- onlineNews %>% filter(`data_channel_is_lifestyle` ==  1) %>% 
-  select(- c(`data_channel_is_bus`, `data_channel_is_entertainment`,
-             `data_channel_is_socmed`, `data_channel_is_tech`,
-             `data_channel_is_world`, url, `timedelta`))
+# Filtered rows based on articleTopic. Removed data_channel_is_* variables, and  
+# non-predictive variables (URL, Timedelta, articleTopic).
+
+onlineNewsLifestyle <- filter(onlineNewsLifestyle, articleTopic == params$topic) %>% 
+  select(- c(url, `timedelta`, articleTopic, `data_channel_is_lifestyle`,
+             `data_channel_is_bus`, `data_channel_is_entertainment`,
+             `data_channel_is_socmed`, `data_channel_is_tech`, `data_channel_is_world`))
 
 # Remove space in front of each column name
 names(onlineNewsLifestyle) <- sub(" ", "", names(onlineNewsLifestyle))
@@ -222,6 +234,10 @@ dim(onlineNewsTest)
 ### Linear Regression Models
 A linear regression model is a model used to determine the relationship between two or more variables by fitting a linear equation to the data.  The linear equation is in the form of: Y = Bo + B1X + E where Y is the response variable, X is the explanatory variable, Bo is the y intercept, and B1 is the slope.  The model can be used to predict the value of the response variable based on the values of the explanatory variables.  For example a linear regression model can be used to model the relationship between years of experience and salary.
 ```{r, echo = TRUE}
+# Use parallel computing for our models
+cl <- makePSOCKcluster(5)
+registerDoParallel(cl)
+
 # Store model one in a formula.
 modelOne <- as.formula("shares ~ n_tokens_content + n_tokens_title + rate_positive_words + num_keywords + global_subjectivity + max_positive_polarity + num_imgs")
 
@@ -267,13 +283,16 @@ boostedGrid <- expand.grid(
   n.minobsinnode=10
 )
 
-boostedTree <- train(shares ~. -data_channel_is_lifestyle, 
+boostedTree <- train(shares ~., 
                      data = onlineNewsTrain,
              method = "gbm",
              preProcess = c("center", "scale"),
              trControl = trainControl(method = "repeatedcv", number = 5,
                                       repeats = 3),
              tuneGrid = boostedGrid)
+
+# End parallel computing
+stopCluster(cl)
 ```
 
 ## Comparison
