@@ -37,12 +37,13 @@ The goal of this report is to predict the number of shares for each data channel
 
 The steps for this report include:
 
-- Load in required packages
+- Loading in required packages
 - Import the data and subset by data channel
 - Perform exploratory analysis 
 - Split the data into training and test sets
 - Train models using cross-validation (CV)
 - Evaluate models on the test set
+- Compare results
 
 
 ```{r, echo = TRUE, message = FALSE}
