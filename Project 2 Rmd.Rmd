@@ -1,5 +1,5 @@
 ---
-title: " `r params$topic` Articles Predictive Modeling"
+title: " `r params$topic` Channel Predictive Modeling"
 author: "Alex Prevatte & Chennade Brown"  
 date: "10/31/2021"
 output: 
@@ -16,20 +16,34 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-Our project involves creating predictive models and automating Markdown reports for each article topic (Lifestyle, Social Media, Business, World, Entertainment, and Technology) using the [Online News Popularity Data Set](https://archive.ics.uci.edu/ml/datasets/Online+News+Popularity). This dataset contains quantitative information including the number of words, images, and links, as well as qualitative information such as article topic and day published. The goal of this report is to predict the number of shares for each article topic using linear regression, random forest, and boosted tree models. Our team used 55 prediction attributes for ensemble methods and a combination of the following attributes for linear regression to predict article shares:
+Our project involves creating predictive models and automating Markdown reports for each data channel topic (Lifestyle, Social Media, Business, World, Entertainment, and Technology) using the [Online News Popularity Data Set](https://archive.ics.uci.edu/ml/datasets/Online+News+Popularity). 
 
-`n_tokens_title` : Number of words in the title
-`n_tokens_content` : Number of words in the content
-`rate_positive_words` : Rate of positive words among non-neutral tokens
-`num_hrefs` : Number of links
-`num_imgs` : Number of images
-`num_keywords` : Number of keywords in the metadata
-`global_subjectivity` : Text subjectivity
-`max_positive_polarity` : Max. polarity of positive words
-`num_imgs` : Number of images
-`kw_avg_avg` : Avg. keyword (avg. shares)
-`kw_min_avg` : Avg. keyword (min. shares)
-`kw_max_avg` : Avg. keyword (max. shares)
+This dataset contains quantitative information including the `n_tokens_title`(number of words in title), `num_imgs` (number of images), `rate_positive_words` (rate of positive words) and `num_hrefs` (number of links) among several other variables. In addition, qualitative information such as channel topic and the day the article was shared was included. 
+
+The goal of this report is to predict the number of shares for each data channel using linear regression, random forest, and boosted tree models. Our team analyzed the data using 54 prediction attributes for ensemble methods and a combination of the following attributes for linear regression:
+
+- `n_tokens_title`: Number of words in the title
+- `n_tokens_content` : Number of words in the content
+- `rate_positive_words` : Rate of positive words among non-neutral tokens
+- `num_hrefs` : Number of links
+- `num_imgs` : Number of images
+- `num_keywords` : Number of keywords in the metadata
+- `global_subjectivity` : Text subjectivity
+- `max_positive_polarity` : Max. polarity of positive words
+- `num_imgs` : Number of images
+- `kw_avg_avg` : Avg. keyword (avg. shares)
+- `kw_min_avg` : Avg. keyword (min. shares)
+- `kw_max_avg` : Avg. keyword (max. shares)
+
+The steps for this report include:
+
+- Load in required packages
+- Import the data and subset by data channel
+- Perform exploratory analysis 
+- Split the data into training and test sets
+- Train models using cross-validation (CV)
+- Evaluate models on the test set
+
 
 ```{r, echo = TRUE, message = FALSE}
 library(tidyverse)
@@ -81,6 +95,7 @@ onlineNewsLifestyle <- data.frame(onlineNewsLifestyle)
 # Summary statistics for shares
 sum <- summary(onlineNewsLifestyle$shares)
 std <- sd(onlineNewsLifestyle$shares)
+
 # Median and mean to be used for histogram plot
 median <- sum[3]
 mean <- sum[4]
