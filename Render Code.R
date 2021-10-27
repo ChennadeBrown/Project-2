@@ -7,11 +7,11 @@ Topic <- list("Lifestyle", "Business", "Entertainment", "Social Media",
               "Tech", "World")
 
 # Create list for output files
-output_file <- paste0(Topic, ".html")
+output_file <- paste0(Topic, ".md")
 params <- lapply(Topic, FUN = function(x){list(topic = x)})
 reports <- tibble(output_file, params)
 
-# Use apply function to render through each article topic
+# Use apply function to render through each article
 library(rmarkdown)
 apply(reports, MARGIN = 1, 
       FUN = function(x){
