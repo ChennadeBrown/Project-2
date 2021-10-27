@@ -258,7 +258,7 @@ rfFit
 ### Boosted Tree Model
 Boosting is an ensemble tree-based method used for regression and classification. Boosting seeks to improve prediction by training on decision trees which are grown sequentially. Each subsequent tree is grown on a modified version of the original data. The predictions are then updated as new trees are grown, minimizing the error of the previous tree. The parameters used in boosting are the number of trees, interaction depth (number of splits on a tree), shrinkage, and minimum number of observations in trees' terminal nodes.  
 
-```{r}
+```{r, results = 'hide'}
 # Boosted tree. After examining ranges of values for number of trees and interaction depth, 25 trees with an interaction depth of 1 had the lowest test RMSE.
 boostedGrid <- expand.grid(
   interaction.depth=c(1:4), 
