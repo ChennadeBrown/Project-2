@@ -1,4 +1,4 @@
-Lifestyle Channel Predictive Modeling
+Business Channel Predictive Modeling
 ================
 Alex Prevatte & Chennade Brown
 10/31/2021
@@ -114,8 +114,8 @@ mean <- sum[4]
 print(sum)
 ```
 
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##      28    1100    1700    3682    3250  208300
+    ##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+    ##      1.0    952.2   1400.0   3063.0   2500.0 690400.0
 
 ``` r
 # Summary statistics for Number of Words in Title
@@ -125,7 +125,7 @@ print(sum)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   3.000   8.000  10.000   9.766  11.000  18.000
+    ##    3.00    9.00   10.00   10.28   12.00   19.00
 
 ``` r
 # Summary statistics for Number of Words in Content
@@ -135,7 +135,7 @@ print(sum)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##     0.0   308.5   502.0   621.3   795.0  8474.0
+    ##     0.0   244.0   400.0   539.9   727.0  6336.0
 
 ``` r
 # Create Day variable to combine days for contingency table
@@ -164,8 +164,8 @@ table(dayShares$Popular, factor(dayShares$Day, levels = c("M", "T", "W",
 
     ##      
     ##         M   T   W   R   F Sat Sun
-    ##   No  175 196 215 201 167  71  80
-    ##   Yes 147 138 173 157 138 111 130
+    ##   No  607 666 721 684 426  36  89
+    ##   Yes 546 516 550 550 406 207 254
 
 ``` r
 # Table of total shares for each day. This table includes both unpopular and popular shares
@@ -178,13 +178,13 @@ tableTotal
 ```
 
     ##   Day Total_Shares
-    ## 1   M       922890
-    ## 2   T      1399319
-    ## 3   W      1253096
-    ## 4   R       739366
-    ## 5   F       795979
-    ## 6 Sat      1386933
-    ## 7 Sun      1231194
+    ## 1   M      1966657
+    ## 2   T      4482214
+    ## 3   W      3560327
+    ## 4   R      1075736
+    ## 5   F      1215518
+    ## 6 Sat      3466021
+    ## 7 Sun      3401897
 
 ``` r
 # Scatterplot of Number of Words in Title vs. Number of Shares. If the correlation is 
@@ -202,7 +202,7 @@ ggplot(onlineNews, aes(n_tokens_title, shares)) +
             label = paste0("Correlation =", round(titleCorrelation, 3)))
 ```
 
-![](Reports/Lifestyle_files/figure-gfm/unnamed-chunk-52-1.png)<!-- -->
+![](Reports/Business_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 # Histogram of total shares for the data channel. Mean and median vertical lines have been
@@ -220,7 +220,7 @@ ggplot(onlineNews, aes(x=shares)) +
   geom_vline(aes(xintercept = mean), colour="red")
 ```
 
-![](Reports/Lifestyle_files/figure-gfm/unnamed-chunk-52-2.png)<!-- -->
+![](Reports/Business_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
 
 ``` r
 # Barplot of Total Shares vs. Day of the Week. This barplot shows the trend in
@@ -233,7 +233,7 @@ ggplot(tableTotal, aes(x=Day, y = Total_Shares)) +
   ggtitle("Total Shares by Day of the Week") 
 ```
 
-![](Reports/Lifestyle_files/figure-gfm/unnamed-chunk-52-3.png)<!-- -->
+![](Reports/Business_files/figure-gfm/unnamed-chunk-7-3.png)<!-- -->
 
 ``` r
 # Summary statistics for the number of words in the content.
@@ -242,7 +242,7 @@ sumWords
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##     0.0   308.5   502.0   621.3   795.0  8474.0
+    ##     0.0   244.0   400.0   539.9   727.0  6336.0
 
 ``` r
 # Summary statistics for the number of links in the content. 
@@ -251,7 +251,7 @@ sumLinks
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##    0.00    6.00   10.00   13.42   18.00  145.00
+    ##   0.000   4.000   7.000   9.356  12.000 122.000
 
 ``` r
 # Summary statistics for the number of images in the content.
@@ -260,7 +260,7 @@ sumImages
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   0.000   1.000   1.000   4.905   8.000 111.000
+    ##   0.000   1.000   1.000   1.808   1.000  51.000
 
 ``` r
 # Add Word variable for words to include low, average, and high word count and combine with dayshares dataframe for contingency table.
@@ -285,9 +285,9 @@ table(wordLinkShares$Popular, factor(wordLinkShares$Words, levels = c("Low", "Av
 ```
 
     ##      
-    ##       Low Average High
-    ##   No  579     142  384
-    ##   Yes 468     136  390
+    ##        Low Average High
+    ##   No  2213     309  707
+    ##   Yes 1513     270 1246
 
 ``` r
 # Contingency table for the number of links in the content based on grouping the link count into categories of low, average,and high and shares based on popularity (shares greater than the median)
@@ -295,9 +295,9 @@ table(wordLinkShares$Popular, factor(wordLinkShares$Links, levels = c("Low", "Av
 ```
 
     ##      
-    ##       Low Average High
-    ##   No  544     246  315
-    ##   Yes 435     191  368
+    ##        Low Average High
+    ##   No  2352     516  361
+    ##   Yes 1796     566  667
 
 ``` r
 # Select predictors to view in GGPairs plot.
@@ -309,13 +309,13 @@ xpred2 <- onlineNews %>% select(num_keywords, global_subjectivity, rate_positive
 ggpairs(xpred, title = "Correlogram with ggpairs")
 ```
 
-![](Reports/Lifestyle_files/figure-gfm/unnamed-chunk-60-1.png)<!-- -->
+![](Reports/Business_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 ggpairs(xpred2, title = "Correlogram with ggpairs")
 ```
 
-![](Reports/Lifestyle_files/figure-gfm/unnamed-chunk-60-2.png)<!-- -->
+![](Reports/Business_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->
 
 ``` r
 # The following scatterplot shows the trend of shares as a function of the number of links in the content.  An upward trend in the points indicates that articles with more links are shared more often.  A downward trend would indicate that articles with more links are shared less often.  If there is neither an upward or downward trend this indicates that the number of links in the article has no effect on whether the article will be shared.
@@ -324,7 +324,7 @@ g <- ggplot(onlineNews, aes(x = num_hrefs, y = shares)) + labs(y ="Number of Sha
 g + geom_point(col = "purple") + ggtitle("Number of Links vs. Shares") + geom_text(x = 125, y = 30000, size = 5, label = paste0("Correlation = ", round(correlation, 2)))
 ```
 
-![](Reports/Lifestyle_files/figure-gfm/unnamed-chunk-61-1.png)<!-- -->
+![](Reports/Business_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ``` r
 # The following scatterplot shows the relationship between the rate of positive words in the articles and the number of shares.  If the plots are on an upward trajectory then articles with more positive words are shared the most.  If the plots are on a downward trend then the articles with the most positive words are shared the least.
@@ -333,7 +333,7 @@ g <- ggplot(onlineNews, aes(x = rate_positive_words, y = shares)) + labs(y ="Num
 g + geom_point(col = "blue") + ggtitle("Rate of Positive Words vs. Shares") + geom_text(x = 0.75, y = 100000, size = 5, label = paste0("Correlation = ", round(correlationTwo, 2)))
 ```
 
-![](Reports/Lifestyle_files/figure-gfm/unnamed-chunk-62-1.png)<!-- -->
+![](Reports/Business_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ## Modeling
 
@@ -346,13 +346,13 @@ onlineNewsTest <- onlineNews[-trainIndex, ]
 dim(onlineNewsTrain)
 ```
 
-    ## [1] 1472   53
+    ## [1] 4382   53
 
 ``` r
 dim(onlineNewsTest)
 ```
 
-    ## [1] 627  53
+    ## [1] 1876   53
 
 ### Linear Regression Models
 
@@ -383,16 +383,16 @@ fit1
 
     ## Linear Regression 
     ## 
-    ## 1472 samples
+    ## 4382 samples
     ##    7 predictor
     ## 
     ## Pre-processing: centered (7), scaled (7) 
     ## Resampling: Cross-Validated (10 fold) 
-    ## Summary of sample sizes: 1324, 1325, 1324, 1325, 1324, 1325, ... 
+    ## Summary of sample sizes: 3945, 3944, 3945, 3943, 3944, 3943, ... 
     ## Resampling results:
     ## 
-    ##   RMSE      Rsquared    MAE     
-    ##   8388.512  0.01659042  3365.702
+    ##   RMSE      Rsquared     MAE     
+    ##   10534.39  0.007966172  2564.416
     ## 
     ## Tuning parameter 'intercept' was held constant at a value of TRUE
 
@@ -410,16 +410,16 @@ fit2
 
     ## Linear Regression 
     ## 
-    ## 1472 samples
+    ## 4382 samples
     ##    5 predictor
     ## 
     ## Pre-processing: centered (5), scaled (5) 
     ## Resampling: Cross-Validated (10 fold) 
-    ## Summary of sample sizes: 1325, 1325, 1326, 1325, 1324, 1325, ... 
+    ## Summary of sample sizes: 3943, 3944, 3944, 3945, 3942, 3945, ... 
     ## Resampling results:
     ## 
     ##   RMSE      Rsquared    MAE     
-    ##   8651.633  0.02847098  3375.921
+    ##   10516.92  0.06095831  2516.885
     ## 
     ## Tuning parameter 'intercept' was held constant at a value of TRUE
 
@@ -442,25 +442,25 @@ rfFit
 
     ## Random Forest 
     ## 
-    ## 1472 samples
+    ## 4382 samples
     ##   52 predictor
     ## 
     ## No pre-processing
     ## Resampling: Bootstrapped (25 reps) 
-    ## Summary of sample sizes: 1472, 1472, 1472, 1472, 1472, 1472, ... 
+    ## Summary of sample sizes: 4382, 4382, 4382, 4382, 4382, 4382, ... 
     ## Resampling results across tuning parameters:
     ## 
-    ##   mtry  RMSE       Rsquared     MAE     
-    ##    1     9853.586  0.006748714  3486.656
-    ##    2     9918.826  0.005737714  3577.999
-    ##    3     9991.710  0.004592254  3636.907
-    ##    4    10055.343  0.004414908  3677.926
-    ##    5    10103.831  0.004652757  3696.081
-    ##    6    10178.273  0.003842776  3719.815
-    ##    7    10238.087  0.003876617  3751.219
-    ##    8    10280.960  0.003604932  3762.539
-    ##    9    10342.428  0.003671853  3779.418
-    ##   10    10410.033  0.003317771  3788.638
+    ##   mtry  RMSE      Rsquared    MAE     
+    ##    1    11513.23  0.02206228  2436.369
+    ##    2    11568.21  0.02447861  2493.935
+    ##    3    11646.38  0.02358890  2531.519
+    ##    4    11729.61  0.02241006  2560.713
+    ##    5    11794.24  0.02196978  2578.475
+    ##    6    11845.15  0.02152192  2602.725
+    ##    7    11951.93  0.02129624  2622.067
+    ##    8    12028.19  0.01931955  2638.795
+    ##    9    12078.51  0.01953920  2644.412
+    ##   10    12158.10  0.01894350  2664.995
     ## 
     ## RMSE was used to select the optimal model using the smallest value.
     ## The final value used for the model was mtry = 1.
@@ -524,7 +524,7 @@ comparisons
 ```
 
     ##      Linear Model Backwards Selection Boosted Tree Linear Model One Random Forest
-    ## RMSE                         5880.118     5834.382         5942.093      5724.291
+    ## RMSE                         18420.46     18594.13         18454.03      18372.55
 
 ``` r
 # Compare RMSE values and store in a data frame..
@@ -543,10 +543,10 @@ df
 ```
 
     ##                       RMSE
-    ## LinearModelOne    5942.093
-    ## LinearModelBckSel 5880.118
-    ## rForest           5724.291
-    ## boostedTree       5834.382
+    ## LinearModelOne    18454.03
+    ## LinearModelBckSel 18420.46
+    ## rForest           18372.55
+    ## boostedTree       18594.13
 
 ``` r
 # Use the slice_min function to return the row with the lowest RMSE.
@@ -555,7 +555,7 @@ BestModel
 ```
 
     ##             RMSE
-    ## rForest 5724.291
+    ## rForest 18372.55
 
 ``` r
 # Use the apply function to return the final winner.
@@ -569,4 +569,4 @@ apply(X = select(df, RMSE), MARGIN = 2,
 
     ## $RMSE
     ##           Winner
-    ## rForest 5724.291
+    ## rForest 18372.55
