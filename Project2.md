@@ -1,6 +1,6 @@
 Project 2 - Predictive Models
 ================
-Alex Prevatte & Chennade Brown
+Alex Prevatte & Chennade Brown  
 10/31/2021
 
 -   [Introduction](#introduction)
