@@ -183,7 +183,7 @@ table(wordLinkShares$Popular, factor(wordLinkShares$Links, levels = c("Low", "Av
 
 ```{r, echo = TRUE, message = FALSE}
 # Select predictors to view in GGPairs plot.
-xpred <- onlineNewsLifestyle %>% select(kw_avg_min, n_tokens_content, num_videos, avg_negative_polarity, rate_negative_words, shares)
+xpred <- onlineNewsLifestyle %>% select(kw_avg_avg, n_tokens_content, num_imgs, kw_min_avg, kw_max_avg, num_hrefs, shares)
 
 xpred2 <- onlineNewsLifestyle %>% select(num_keywords, global_subjectivity, rate_positive_words, n_tokens_title, max_positive_polarity, shares)
 
