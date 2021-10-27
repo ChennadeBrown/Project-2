@@ -78,7 +78,7 @@ onlineNewsLifestyle <- onlineNews %>%
 # Filtered rows based on articleTopic. Removed data_channel_is_* variables, and  
 # non-predictive variables (URL, Timedelta, articleTopic).
 
-onlineNewsLifestyle <- filter(onlineNewsLifestyle, articleTopic == params$topic) %>% 
+onlineNewsLifestyle <- filter(onlineNewsLifestyle, articleTopic == "Lifestyle") %>% 
   select(- c(url, `timedelta`, articleTopic, `data_channel_is_lifestyle`,
              `data_channel_is_bus`, `data_channel_is_entertainment`,
              `data_channel_is_socmed`, `data_channel_is_tech`, `data_channel_is_world`))
@@ -135,10 +135,9 @@ table(dayShares$Popular, factor(dayShares$Day, levels = c("M", "T", "W",
 # Table of shares for each day
 tableTotal <- aggregate(dayShares$shares, by=list(Day=dayShares$Day), FUN=sum)
 colnames(tableTotal) <- c("Day", "Total_Shares")
-tableTotal$Day <- factor(tableTotal$Day, levels = c("M", "T", "W", 
-                                                          "R", "F", "Sat", "Sun"))
+tableTotal$Day <- factor(tableTotal$Day)
+levels(tableTotal$Day) = c("M", "T", "W", "R", "F", "Sat", "Sun")
 tableTotal
-      
 ```
 
 ```{r, echo = TRUE, warning = FALSE}
