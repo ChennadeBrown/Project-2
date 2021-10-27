@@ -1,5 +1,5 @@
 ---
-title: " `r params$topic` Predictive Models"
+title: " `r params$topic` Articles Predictive Modeling"
 author: "Alex Prevatte & Chennade Brown"  
 date: "10/31/2021"
 output: 
