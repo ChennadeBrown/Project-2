@@ -299,7 +299,7 @@ fit2
 ```
 
 ### Random Forest Model
-Random Forest models are an extension of the tree based method bagging.  The random forest algorithm creates multiple trees from bootstrapped samples, averages those results, and uses a random subset of predictors for each bootstrap sample/tree fit.  Random forests can be used for classification and regression problems.
+Random Forest models are an extension of the tree based method bagging.  The random forest algorithm creates multiple trees from bootstrapped samples, includes a random subset of predictors in each tree, and predicts based on the average of the results from those trees.  Random forests can be used for classification and regression problems.
 
 ```{r, echo = TRUE}
 rfFit <- train(shares ~., data = onlineNewsTrain, 
