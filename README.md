@@ -1,5 +1,5 @@
 
-## Project 2 
+## Project 2 - Predictive Modeling
 
 This repo documents our group’s work on Project 2. Project 2 involved
 analyzing the [online news popularity data
