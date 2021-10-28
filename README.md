@@ -24,8 +24,6 @@ A report was created for each data channel: Lifestyle, Business, Entertainment, 
 
 ### Code
 The code to create the analysis from a single .Rmd file is below:
-
-The code to create the analysis from a single .Rmd file is below:
 ```{r, echo = TRUE}
 # Create variable that contains each article topic 
 library(tidyverse)
