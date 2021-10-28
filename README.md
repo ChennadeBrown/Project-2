@@ -1,37 +1,43 @@
-## Welcome to GitHub Pages
+## Project 2 - Predictive Modeling
 
-You can use the [editor on GitHub](https://github.com/ChennadeBrown/Project-2/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
+This repo documents our group's work on Project 2.  Project 2 involved analyzing the [online news popularity data set](https://archive.ics.uci.edu/ml/datasets/Online+News+Popularity), creating predictive models to predict the number of shares for each channel, and automating Markdown reports for each type of article.  
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Packages Required 
+The following packages were used to retrieve and analyze the data:  
+* `tidyverse`: Functions used to manipulate and reshape data.  
+* `dplyr`: Functions used to manipulate data in R.  
+* `GGally`: Functions used to create correlograms.  
+* `caret`: Functions that streamline the model training process for regression and classification problems.  
+* `randomForest`: Has the function randomForest() which is used to create and analyze random forests.  
+* `doParallel`: Function used to allow parallel computing in R  .
 
-### Markdown
+### Reports
+A report was created for each data channel: Lifestyle, Business, Entertainment, Social Media, Tech, and World articles.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+* The analysis for [Lifestyle articles is available here](Lifestyle.html).
+* The analysis for [Business articles is available here](Business.html).
+* The analysis for [Entertainment articles is available here](Entertainment.html).
+* The analysis for [Social Media articles is available here](Social Media.html).
+* The analysis for [Tech articles is available here](Tech.html).
+* The analysis for [World articles is available here](World.html).
 
-```markdown
-Syntax highlighted code block
+### Code
+The code to create the analysis from a single .Rmd file is below:
+```{r, eval = FALSE}
+# Create variable that contains each article topic 
+library(tidyverse)
+Topic <- list("Lifestyle", "Business", "Entertainment", "Social Media",
+              "Tech", "World")
 
-# Header 1
-## Header 2
-### Header 3
+# Create list for output files
+output_file <- paste0("Reports/", Topic, ".md")
+params <- lapply(Topic, FUN = function(x){list(topic = x)})
+reports <- tibble(output_file, params)
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+# Use apply function to render through each article
+library(rmarkdown)
+apply(reports, MARGIN = 1, 
+      FUN = function(x){
+        render("Project 2 Rmd.Rmd", output_file = x[[1]], params = x[[2]])
+      })
 ```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ChennadeBrown/Project-2/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
