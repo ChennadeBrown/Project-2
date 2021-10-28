@@ -11,7 +11,11 @@ params:
 ---
 
 ```{r setup, include=FALSE}
+# Define image path
+images <- paste0("../Reports/", params$topic, "_files/figure-gfm/")
+
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.path = images)
 ```
 
 ## Introduction
