@@ -60,6 +60,5 @@ apply(reports, MARGIN = 1,
       FUN = function(x){
         render("Project 2 Rmd.Rmd", output_file = x[[1]], params = x[[2]])
       })
-```
 
 \`\`\`
