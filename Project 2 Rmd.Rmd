@@ -51,7 +51,6 @@ library(tidyverse)
 library(dplyr)
 library(knitr)
 library(GGally)
-library(corrplot)
 library(caret)
 library(randomForest)
 library(doParallel)
@@ -78,7 +77,7 @@ onlineNews <- onlineNews %>%
 # Filtered rows based on articleTopic. Removed data_channel_is_* variables, and  
 # non-predictive variables (URL, Timedelta, articleTopic).
 
-onlineNews <- filter(onlineNews, articleTopic == params$topic) %>% 
+onlineNews <- filter(onlineNews, articleTopic == "params$topic") %>% 
   select(- c(url, `timedelta`, articleTopic, `data_channel_is_lifestyle`,
              `data_channel_is_bus`, `data_channel_is_entertainment`,
              `data_channel_is_socmed`, `data_channel_is_tech`, `data_channel_is_world`))
@@ -215,7 +214,7 @@ wordLinkShares <- dayShares %>% mutate(Words = if_else(n_tokens_content <= 500, 
 # Add Link variable for the number of links in the content to include low, average, and high count.
 wordLinkShares <- wordLinkShares %>% mutate(Links = if_else(num_hrefs <= 9, "Low", if_else(num_hrefs <= 14, "Average","High")))
 
-# Remove extra columns added to onLineNewsLifestyle.
+# Remove extra columns added to onLineNews.
 onlineNews$WordCount <- NULL
 onlineNews$Popular <- NULL
 onlineNews$Words <- NULL
@@ -229,7 +228,7 @@ table(wordLinkShares$Popular, factor(wordLinkShares$Words, levels = c("Low", "Av
 ```
 
 ```{r, echo = TRUE}
-# Contingency table for the number of links in the content based on grouping the link count into categories of low, average,and high and shares based on popularity (shares greater than the median)
+# Contingency table for the number of links in the content based on grouping the link count into categories of low, average,and high and shares based on popularity (shares greater than the median).
 table(wordLinkShares$Popular, factor(wordLinkShares$Links, levels = c("Low", "Average", "High")))
 ```
 
@@ -300,7 +299,7 @@ fit2
 ```
 
 ### Random Forest Model
-Random Forest models are an extension of the tree based method bagging.  The random forest algorithm creates multiple trees from bootstrapped samples, averages those results, and uses a random subset of predictors for each bootstrap sample/tree fit.  Random forests can be used for classification and regression problems.
+Random Forest models are an extension of the tree based method bagging.  The random forest algorithm creates multiple trees from bootstrapped samples, uses a random subset of predictors for each bootstrap sample/tree fit, and predicts by averaging the results from various trees.  Random forests can be used for classification and regression problems.
 
 ```{r, echo = TRUE}
 rfFit <- train(shares ~., data = onlineNewsTrain, 
@@ -375,11 +374,7 @@ df <- as.data.frame(modelRmse)
 attributes(df)$names[1] <- "RMSE"
 df
 
-# Use the slice_min function to return the row with the lowest RMSE.
-BestModel <- df %>% slice_min(RMSE)
-BestModel
-
-# Use the apply function to return the final winner.
+# Use the apply function to return the winner (model with the lowest RMSE).
 apply(X = select(df, RMSE), MARGIN = 2,
       FUN = function(x){
         winner <- df %>% slice_min(RMSE)
