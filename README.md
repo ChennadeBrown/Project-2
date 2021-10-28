@@ -10,7 +10,6 @@ channel, and automating Markdown reports for each type of article.
 ### Packages Required
 
 The following packages were used to retrieve and analyze the data:  
-<<<<<<< HEAD
 \* `tidyverse`: Functions used to manipulate and reshape data.  
 \* `dplyr`: Functions used to manipulate data in R.  
 \* `GGally`: Functions used to create correlograms.  
@@ -21,15 +20,6 @@ create and analyze random forests.
 \* `doParallel`: Functions used to allow parallel computing in R . \*
 `rmarkdown`: Package helps you create dynamic analysis documents that
 combine code, rendered output, and text.
-=======
-* `tidyverse`: Functions used to manipulate and reshape data.  
-* `dplyr`: Functions used to manipulate data in R.  
-* `GGally`: Functions used to create correlograms.  
-* `caret`: Functions that streamline the model training process for regression and classification problems.  
-* `randomForest`: Has the function randomForest() which is used to create and analyze random forests.  
-* `doParallel`: Function used to allow parallel computing in R.
-* `rmarkdown`: Package helps you create dynamic analysis documents that combine code, rendered output, and text.  
->>>>>>> 345fd8b2408001f087b7fc86282067e73d14d912
 
 ### Reports
 
@@ -52,12 +42,8 @@ Entertainment, Social Media, Tech, and World articles.
 ### Code
 
 The code to create the analysis from a single .Rmd file is below:
-<<<<<<< HEAD
 
 ``` r
-=======
-```{r, echo = TRUE}
->>>>>>> 345fd8b2408001f087b7fc86282067e73d14d912
 # Create variable that contains each article topic 
 library(tidyverse)
 Topic <- list("Lifestyle", "Business", "Entertainment", "Social Media",
@@ -75,8 +61,5 @@ apply(reports, MARGIN = 1,
         render("Project 2 Rmd.Rmd", output_file = x[[1]], params = x[[2]])
       })
 ```
-<<<<<<< HEAD
 
 \`\`\`
-=======
->>>>>>> 345fd8b2408001f087b7fc86282067e73d14d912
