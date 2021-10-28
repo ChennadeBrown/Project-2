@@ -14,12 +14,12 @@ The following packages were used to retrieve and analyze the data:
 ### Reports
 A report was created for each data channel: Lifestyle, Business, Entertainment, Social Media, Tech, and World articles.
 
-* The analysis for [Lifestyle articles is available here](Lifestyle.html).
-* The analysis for [Business articles is available here](Business.html).
+* The analysis for [Lifestyle articles is available here](../Lifestyle.html).
+* The analysis for [Business articles is available here](../Business.html).
 * The analysis for [Entertainment articles is available here](Entertainment.html).
-* The analysis for [Social Media articles is available here](Social Media.html).
-* The analysis for [Tech articles is available here](Tech.html).
-* The analysis for [World articles is available here](World.html).
+* The analysis for [Social Media articles is available here](../Social Media.html).
+* The analysis for [Tech articles is available here](../Tech.html).
+* The analysis for [World articles is available here](../World.html).
 
 ### Code
 The code to create the analysis from a single .Rmd file is below:
