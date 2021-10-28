@@ -51,7 +51,6 @@ library(tidyverse)
 library(dplyr)
 library(knitr)
 library(GGally)
-library(corrplot)
 library(caret)
 library(randomForest)
 library(doParallel)
@@ -374,10 +373,6 @@ df <- as.data.frame(modelRmse)
 # Name the column in the data frame.
 attributes(df)$names[1] <- "RMSE"
 df
-
-# Use the slice_min function to return the row with the lowest RMSE.
-BestModel <- df %>% slice_min(RMSE)
-BestModel
 
 # Use the apply function to return the final winner.
 apply(X = select(df, RMSE), MARGIN = 2,
