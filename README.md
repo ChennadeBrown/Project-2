@@ -25,17 +25,19 @@ A report was created for each data channel: Lifestyle, Business, Entertainment, 
 ### Code
 The code to create the analysis from a single .Rmd file is below:
 
-* Create variable that contains each article topic 
+The code to create the analysis from a single .Rmd file is below:
+```{r, echo = TRUE}
+# Create variable that contains each article topic 
 library(tidyverse)
 Topic <- list("Lifestyle", "Business", "Entertainment", "Social Media",
               "Tech", "World")
 
-* Create list for output files
+# Create list for output files
 output_file <- paste0("Reports/", Topic, ".md")
 params <- lapply(Topic, FUN = function(x){list(topic = x)})
 reports <- tibble(output_file, params)
 
-* Use apply function to render through each article
+# Use apply function to render through each article
 library(rmarkdown)
 apply(reports, MARGIN = 1, 
       FUN = function(x){
