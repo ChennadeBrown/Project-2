@@ -10,7 +10,8 @@ The following packages were used to retrieve and analyze the data:
 * `GGally`: Functions used to create correlograms.  
 * `caret`: Functions that streamline the model training process for regression and classification problems.  
 * `randomForest`: Has the function randomForest() which is used to create and analyze random forests.  
-* `doParallel`: Function used to allow parallel computing in R  .
+* `doParallel`: Function used to allow parallel computing in R.
+* `rmarkdown`: Package helps you create dynamic analysis documents that combine code, rendered output, and text.  
 
 ### Reports
 A report was created for each data channel: Lifestyle, Business, Entertainment, Social Media, Tech, and World articles.
