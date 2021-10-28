@@ -1,5 +1,5 @@
 
-## Project 2 - Predictive Modeling
+## Project 2 
 
 This repo documents our group’s work on Project 2. Project 2 involved
 analyzing the [online news popularity data
@@ -60,5 +60,6 @@ apply(reports, MARGIN = 1,
       FUN = function(x){
         render("Project 2 Rmd.Rmd", output_file = x[[1]], params = x[[2]])
       })
+```
 
-\`\`\`
+
