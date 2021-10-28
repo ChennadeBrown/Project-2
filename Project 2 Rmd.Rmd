@@ -360,7 +360,7 @@ comparisons
 ```
 
 ```{r, echo = TRUE}
-# Compare RMSE values and store in a data frame..
+# Compare RMSE values and store in a data frame.
 LmOneRmse <- sqrt(mean((pred-onlineNewsTest$shares)^2))
 LmBackSel <- sqrt(mean((pred2-onlineNewsTest$shares)^2))
 rForestRmse <- sqrt(mean((predForest-onlineNewsTest$shares)^2))
