@@ -1,3 +1,4 @@
+
 ## Project 2 - Predictive Modeling
 
 This repo documents our group's work on Project 2.  Project 2 involved analyzing the [online news popularity data set](https://archive.ics.uci.edu/ml/datasets/Online+News+Popularity), creating predictive models to predict the number of shares for each channel, and automating Markdown reports for each type of article.  
@@ -23,18 +24,18 @@ A report was created for each data channel: Lifestyle, Business, Entertainment, 
 
 ### Code
 The code to create the analysis from a single .Rmd file is below:
-```{r, eval = FALSE}
-# Create variable that contains each article topic 
+
+* Create variable that contains each article topic 
 library(tidyverse)
 Topic <- list("Lifestyle", "Business", "Entertainment", "Social Media",
               "Tech", "World")
 
-# Create list for output files
+* Create list for output files
 output_file <- paste0("Reports/", Topic, ".md")
 params <- lapply(Topic, FUN = function(x){list(topic = x)})
 reports <- tibble(output_file, params)
 
-# Use apply function to render through each article
+* Use apply function to render through each article
 library(rmarkdown)
 apply(reports, MARGIN = 1, 
       FUN = function(x){
