@@ -17,7 +17,7 @@ The following packages were used to retrieve and analyze the data:
 regression and classification problems.  
 \* `randomForest`: Has the function randomForest() which is used to
 create and analyze random forests.  
-\* `doParallel`: Functions used to allow parallel computing in R . 
+\* `doParallel`: Functions used to allow parallel computing in R.   
 \* `rmarkdown`: Package helps you create dynamic analysis documents that
 combine code, rendered output, and text.
 
