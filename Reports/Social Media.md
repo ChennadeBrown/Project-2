@@ -62,7 +62,6 @@ library(tidyverse)
 library(dplyr)
 library(knitr)
 library(GGally)
-library(corrplot)
 library(caret)
 library(randomForest)
 library(doParallel)
@@ -427,9 +426,9 @@ fit2
 
 Random Forest models are an extension of the tree based method bagging.
 The random forest algorithm creates multiple trees from bootstrapped
-samples, averages those results, and uses a random subset of predictors
-for each bootstrap sample/tree fit. Random forests can be used for
-classification and regression problems.
+samples, includes a random subset of predictors in each tree, and
+predicts based on the average of the results from those trees. Random
+forests can be used for classification and regression problems.
 
 ``` r
 rfFit <- train(shares ~., data = onlineNewsTrain, 
@@ -527,7 +526,7 @@ comparisons
     ## RMSE                          6568.85     6559.901         6587.295      6460.331
 
 ``` r
-# Compare RMSE values and store in a data frame..
+# Compare RMSE values and store in a data frame.
 LmOneRmse <- sqrt(mean((pred-onlineNewsTest$shares)^2))
 LmBackSel <- sqrt(mean((pred2-onlineNewsTest$shares)^2))
 rForestRmse <- sqrt(mean((predForest-onlineNewsTest$shares)^2))
@@ -547,15 +546,6 @@ df
     ## LinearModelBckSel 6568.850
     ## rForest           6460.331
     ## boostedTree       6559.901
-
-``` r
-# Use the slice_min function to return the row with the lowest RMSE.
-BestModel <- df %>% slice_min(RMSE)
-BestModel
-```
-
-    ##             RMSE
-    ## rForest 6460.331
 
 ``` r
 # Use the apply function to return the final winner.
