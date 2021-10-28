@@ -20,6 +20,7 @@ create and analyze random forests.
 \* `doParallel`: Functions used to allow parallel computing in R.   
 \* `rmarkdown`: Package helps you create dynamic analysis documents that
 combine code, rendered output, and text.
+\* `knitr`: Package that enables integration of R code into LaTex, HTML, and Markdown documents.
 
 ### Reports
 
