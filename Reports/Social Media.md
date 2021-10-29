@@ -201,7 +201,7 @@ ggplot(onlineNews, aes(n_tokens_title, shares)) +
             label = paste0("Correlation =", round(titleCorrelation, 3)))
 ```
 
-![](Reports/Social%20Media_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](../Reports/Social%20Media_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 # Histogram of total shares for the data channel. Mean and median vertical lines have been
@@ -219,7 +219,7 @@ ggplot(onlineNews, aes(x=shares)) +
   geom_vline(aes(xintercept = mean), colour="red")
 ```
 
-![](Reports/Social%20Media_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
+![](../Reports/Social%20Media_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
 
 ``` r
 # Barplot of Total Shares vs. Day of the Week. This barplot shows the trend in
@@ -232,7 +232,7 @@ ggplot(tableTotal, aes(x=Day, y = Total_Shares)) +
   ggtitle("Total Shares by Day of the Week") 
 ```
 
-![](Reports/Social%20Media_files/figure-gfm/unnamed-chunk-7-3.png)<!-- -->
+![](../Reports/Social%20Media_files/figure-gfm/unnamed-chunk-7-3.png)<!-- -->
 
 ``` r
 # Summary statistics for the number of words in the content.
@@ -308,13 +308,13 @@ xpred2 <- onlineNews %>% select(num_keywords, global_subjectivity, rate_positive
 ggpairs(xpred, title = "Correlogram with ggpairs")
 ```
 
-![](Reports/Social%20Media_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](../Reports/Social%20Media_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 ggpairs(xpred2, title = "Correlogram with ggpairs")
 ```
 
-![](Reports/Social%20Media_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->
+![](../Reports/Social%20Media_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->
 
 ``` r
 # The following scatterplot shows the trend of shares as a function of the number of links in the content.  An upward trend in the points indicates that articles with more links are shared more often.  A downward trend would indicate that articles with more links are shared less often.  If there is neither an upward or downward trend this indicates that the number of links in the article has no effect on whether the article will be shared.
@@ -323,7 +323,7 @@ g <- ggplot(onlineNews, aes(x = num_hrefs, y = shares)) + labs(y ="Number of Sha
 g + geom_point(col = "purple") + ggtitle("Number of Links vs. Shares") + geom_text(x = 50, y = 30000, size = 5, label = paste0("Correlation = ", round(correlation, 2)))
 ```
 
-![](Reports/Social%20Media_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](../Reports/Social%20Media_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ``` r
 # The following scatterplot shows the relationship between the rate of positive words in the articles and the number of shares.  If the plots are on an upward trajectory then articles with more positive words are shared the most.  If the plots are on a downward trend then the articles with the most positive words are shared the least.
@@ -332,7 +332,7 @@ g <- ggplot(onlineNews, aes(x = rate_positive_words, y = shares)) + labs(y ="Num
 g + geom_point(col = "blue") + ggtitle("Rate of Positive Words vs. Shares") + geom_text(x = 0.5, y = 100000, size = 5, label = paste0("Correlation = ", round(correlationTwo, 2)))
 ```
 
-![](Reports/Social%20Media_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](../Reports/Social%20Media_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ## Modeling
 
