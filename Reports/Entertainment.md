@@ -320,7 +320,7 @@ ggpairs(xpred2, title = "Correlogram with ggpairs")
 # The following scatterplot shows the trend of shares as a function of the number of links in the content.  An upward trend in the points indicates that articles with more links are shared more often.  A downward trend would indicate that articles with more links are shared less often.  If there is neither an upward or downward trend this indicates that the number of links in the article has no effect on whether the article will be shared.
 correlation <- cor(onlineNews$shares, onlineNews$num_hrefs)  
 g <- ggplot(onlineNews, aes(x = num_hrefs, y = shares)) + labs(y ="Number of Shares", x = "Number of Links")
-g + geom_point(col = "purple") + ggtitle("Number of Links vs. Shares") + geom_text(x = 75, y = 30000, size = 5, label = paste0("Correlation = ", round(correlation, 2)))
+g + geom_point(col = "purple") + ggtitle("Number of Links vs. Shares") + geom_text(x = 50, y = 30000, size = 5, label = paste0("Correlation = ", round(correlation, 2)))
 ```
 
 ![](../Reports/Entertainment_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
@@ -522,8 +522,10 @@ colnames(comparisons) <- c("Linear Model Backwards Selection", "Boosted Tree", "
 comparisons
 ```
 
-    ##      Linear Model Backwards Selection Boosted Tree Linear Model One Random Forest
-    ## RMSE                          9223.64     9222.823         9349.018      9226.958
+    ##      Linear Model Backwards Selection Boosted Tree Linear Model One
+    ## RMSE                          9223.64     9222.823         9349.018
+    ##      Random Forest
+    ## RMSE      9226.958
 
 ``` r
 # Compare RMSE values and store in a data frame.
